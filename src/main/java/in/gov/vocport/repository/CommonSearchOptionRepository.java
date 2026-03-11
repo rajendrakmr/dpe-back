@@ -62,15 +62,34 @@ public class CommonSearchOptionRepository {
 		long total = jdbcTemplate.queryForObject(countSql, params.toArray(), Long.class);
 
 		int offset = page * size;
-		String dataSql = """
-				SELECT PORT_NM, MAN_PORT_CD
-				""" + base + """
-				ORDER BY PORT_NM ASC
-				OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-				""";
+//		String dataSql = """
+//				SELECT PORT_NM, MAN_PORT_CD
+//				""" + base + """
+//				ORDER BY PORT_NM ASC
+//				OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+//				""";
+//
+//		params.add(offset);
+//		params.add(size);
 
-		params.add(offset);
-		params.add(size);
+		String dataSql = """
+        SELECT PORT_NM, MAN_PORT_CD
+        FROM (
+            SELECT p.PORT_NM,
+                   p.MAN_PORT_CD,
+                   ROWNUM rnum
+            FROM (
+                SELECT PORT_NM, MAN_PORT_CD
+                """ + base + """
+                ORDER BY PORT_NM ASC
+            ) p
+            WHERE ROWNUM <= ?
+        )
+        WHERE rnum > ?
+        """;
+
+		params.add(offset + size); // upper limit
+		params.add(offset);        // lower limit
 
 		@SuppressWarnings("deprecation")
 		List<PortDto> content = jdbcTemplate.query(dataSql, params.toArray(),
@@ -101,15 +120,33 @@ public class CommonSearchOptionRepository {
 
 		int offset = page * size;
 
-		String dataSql = """
-				SELECT s.CONSIGN_NAME
-				""" + base + """
-				ORDER BY s.CONSIGN_NAME ASC
-				OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-				""";
+//		String dataSql = """
+//				SELECT s.CONSIGN_NAME
+//				""" + base + """
+//				ORDER BY s.CONSIGN_NAME ASC
+//				OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+//				""";
+//
+//		params.add(offset);
+//		params.add(size);
 
-		params.add(offset);
-		params.add(size);
+		String dataSql = """
+        SELECT CONSIGN_NAME
+        FROM (
+            SELECT s.CONSIGN_NAME,
+                   ROWNUM rnum
+            FROM (
+                SELECT s.CONSIGN_NAME
+                """ + base + """
+                ORDER BY s.CONSIGN_NAME ASC
+            ) s
+            WHERE ROWNUM <= ?
+        )
+        WHERE rnum > ?
+        """;
+
+		params.add(offset + size); // upper bound
+		params.add(offset);        // lower bound
 
 		@SuppressWarnings("deprecation")
 		List<ShipperDto> content = jdbcTemplate.query(dataSql, params.toArray(),
@@ -208,15 +245,30 @@ public class CommonSearchOptionRepository {
 		int offset = page * size;
 
 		// Data
+//		String dataSql = """
+//				SELECT loc.location_cd, loc.location_name
+//				""" + base + """
+//				ORDER BY loc.location_name ASC
+//				OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+//				""";
 		String dataSql = """
-				SELECT loc.location_cd, loc.location_name
-				""" + base + """
-				ORDER BY loc.location_name ASC
-				OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-				""";
+        SELECT *
+        FROM (
+            SELECT loc.location_cd,
+                   loc.location_name,
+                   ROWNUM rnum
+            FROM (
+                SELECT loc.location_cd, loc.location_name
+                """ + base + """
+                ORDER BY loc.location_name ASC
+            ) loc
+            WHERE ROWNUM <= ?
+        )
+        WHERE rnum > ?
+        """;
 
+		params.add(offset + size); // upper bound
 		params.add(offset);
-		params.add(size);
 
 		@SuppressWarnings("deprecation")
 		List<LocationDto> content = jdbcTemplate.query(dataSql, params.toArray(),
@@ -254,15 +306,34 @@ public class CommonSearchOptionRepository {
 		    int offset = page * size;
 
 		    // Data
-		    String dataSql = """
-		            SELECT loc.location_cd, loc.location_name
-		            """ + base + """
-		            ORDER BY loc.location_name ASC
-		            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-		            """;
+//		    String dataSql = """
+//		            SELECT loc.location_cd, loc.location_name
+//		            """ + base + """
+//		            ORDER BY loc.location_name ASC
+//		            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+//		            """;
+//
+//		    params.add(offset);
+//		    params.add(size);
 
-		    params.add(offset);
-		    params.add(size);
+		String dataSql = """
+        SELECT location_cd, location_name
+        FROM (
+            SELECT loc.location_cd,
+                   loc.location_name,
+                   ROWNUM rnum
+            FROM (
+                SELECT loc.location_cd, loc.location_name
+                """ + base + """
+                ORDER BY loc.location_name ASC
+            ) loc
+            WHERE ROWNUM <= ?
+        )
+        WHERE rnum > ?
+        """;
+
+		params.add(offset + size); // upper bound
+		params.add(offset);        // lower bound
 
 		    @SuppressWarnings("deprecation")
 		    List<LocationDto> content = jdbcTemplate.query(
@@ -304,15 +375,34 @@ public class CommonSearchOptionRepository {
 	    int offset = page * size;
 
 	    // Data
-	    String dataSql = """
-	            SELECT loc.location_cd, loc.location_name
-	            """ + base + """
-	            ORDER BY loc.location_name ASC
-	            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-	            """;
+//	    String dataSql = """
+//	            SELECT loc.location_cd, loc.location_name
+//	            """ + base + """
+//	            ORDER BY loc.location_name ASC
+//	            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+//	            """;
+//
+//	    params.add(offset);
+//	    params.add(size);
 
-	    params.add(offset);
-	    params.add(size);
+		String dataSql = """
+        SELECT location_cd, location_name
+        FROM (
+            SELECT loc.location_cd,
+                   loc.location_name,
+                   ROWNUM rnum
+            FROM (
+                SELECT loc.location_cd, loc.location_name
+                """ + base + """
+                ORDER BY loc.location_name ASC
+            ) loc
+            WHERE ROWNUM <= ?
+        )
+        WHERE rnum > ?
+        """;
+
+		params.add(offset + size); // upper limit
+		params.add(offset);        // lower limit
 
 	    @SuppressWarnings("deprecation")
 	    List<LocationDto> content = jdbcTemplate.query(
@@ -351,16 +441,35 @@ public class CommonSearchOptionRepository {
 
 		int offset = page * size;
 
-		// Fetch page data
-		String dataSql = """
-				SELECT a.party_cd, a.agent_nm
-				""" + base + """
-				ORDER BY a.agent_nm ASC
-				OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-				""";
+//		// Fetch page data
+//		String dataSql = """
+//				SELECT a.party_cd, a.agent_nm
+//				""" + base + """
+//				ORDER BY a.agent_nm ASC
+//				OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+//				""";
+//
+//		params.add(offset);
+//		params.add(size);
 
-		params.add(offset);
-		params.add(size);
+		String dataSql = """
+        SELECT party_cd, agent_nm
+        FROM (
+            SELECT a.party_cd,
+                   a.agent_nm,
+                   ROWNUM rnum
+            FROM (
+                SELECT a.party_cd, a.agent_nm
+                """ + base + """
+                ORDER BY a.agent_nm ASC
+            ) a
+            WHERE ROWNUM <= ?
+        )
+        WHERE rnum > ?
+        """;
+
+		params.add(offset + size); // upper limit
+		params.add(offset);        // lower limit
 
 		@SuppressWarnings("deprecation")
 		List<AgentDto> content = jdbcTemplate.query(dataSql, params.toArray(),
@@ -394,15 +503,34 @@ public class CommonSearchOptionRepository {
 		int offset = page * size;
 
 		// data page
-		String dataSql = """
-				SELECT c.cargo_cd,c.cargo_cd_desc
-				""" + base + """
-				ORDER BY c.cargo_cd_desc ASC
-				OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-				""";
+//		String dataSql = """
+//				SELECT c.cargo_cd,c.cargo_cd_desc
+//				""" + base + """
+//				ORDER BY c.cargo_cd_desc ASC
+//				OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+//				""";
+//
+//		params.add(offset);
+//		params.add(size);
 
-		params.add(offset);
-		params.add(size);
+		String dataSql = """
+        SELECT cargo_cd, cargo_cd_desc
+        FROM (
+            SELECT c.cargo_cd,
+                   c.cargo_cd_desc,
+                   ROWNUM rnum
+            FROM (
+                SELECT c.cargo_cd, c.cargo_cd_desc
+                """ + base + """
+                ORDER BY c.cargo_cd_desc ASC
+            ) c
+            WHERE ROWNUM <= ?
+        )
+        WHERE rnum > ?
+        """;
+
+		params.add(offset + size); // upper limit
+		params.add(offset);        // lower limit
 
 		@SuppressWarnings("deprecation")
 		List<CargoDto> content = jdbcTemplate.query(dataSql, params.toArray(),
@@ -434,14 +562,32 @@ public class CommonSearchOptionRepository {
 
 		int offset = page * size;
 
+//		String dataSql = """
+//				SELECT s.CONTAINER_NO
+//				""" + base + """
+//				ORDER BY s.GATE_IN_DATE_TIME DESC
+//				OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+//				""";
+//		params.add(offset);
+//		params.add(size);
+
 		String dataSql = """
-				SELECT s.CONTAINER_NO
-				""" + base + """
-				ORDER BY s.GATE_IN_DATE_TIME DESC
-				OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-				""";
-		params.add(offset);
-		params.add(size);
+        SELECT CONTAINER_NO
+        FROM (
+            SELECT s.CONTAINER_NO,
+                   ROWNUM rnum
+            FROM (
+                SELECT s.CONTAINER_NO
+                """ + base + """
+                ORDER BY s.GATE_IN_DATE_TIME DESC
+            ) s
+            WHERE ROWNUM <= ?
+        )
+        WHERE rnum > ?
+        """;
+
+		params.add(offset + size); // upper limit
+		params.add(offset);        // lower limit
 
 		@SuppressWarnings("deprecation")
 		List<ContainerNoDto> content = jdbcTemplate.query(dataSql, params.toArray(),
@@ -476,15 +622,34 @@ public class CommonSearchOptionRepository {
 
 		int offset = page * size;
 
-		String dataSql = """
-				SELECT a.party_cd, a.agent_nm
-				""" + base + """
-				ORDER BY a.party_cd
-				OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-				""";
+//		String dataSql = """
+//				SELECT a.party_cd, a.agent_nm
+//				""" + base + """
+//				ORDER BY a.party_cd
+//				OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+//				""";
+//
+//		params.add(offset);
+//		params.add(size);
 
-		params.add(offset);
-		params.add(size);
+		String dataSql = """
+        SELECT party_cd, agent_nm
+        FROM (
+            SELECT a.party_cd,
+                   a.agent_nm,
+                   ROWNUM rnum
+            FROM (
+                SELECT a.party_cd, a.agent_nm
+                """ + base + """
+                ORDER BY a.party_cd
+            ) a
+            WHERE ROWNUM <= ?
+        )
+        WHERE rnum > ?
+        """;
+
+		params.add(offset + size); // upper limit
+		params.add(offset);        // lower limit
 
 		@SuppressWarnings("deprecation")
 		List<LinerDto> content = jdbcTemplate.query(dataSql, params.toArray(),

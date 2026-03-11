@@ -101,27 +101,74 @@ public class ContainerGateInSearchRepository {
 
 		int offset = page * size;
 
-		// ---- data page ----
+//		// ---- data page ----
+//		String dataSql = """
+//				SELECT t.CHIT_NO,
+//				       t.CONTAINER_NO,
+//				       t.VEHICLE_NO,
+//				       t.GATE_IN_DATE_TIME,
+//				       t.PARTY_CD,
+//				       t.EIR,
+//				       t.VESSEL_NO,
+//				       t.LOADING_STATUS,
+//				       t.CONTAINER_SIZE,
+//				       t.FOREIGN_COASTAL_FLAG
+//				""" + base + """
+//				ORDER BY t.GATE_IN_DATE_TIME DESC, t.CHIT_NO
+//				OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+//				""";
+//
+//		System.out.println(dataSql);
+//
+//		params.add(offset);
+//		params.add(size);
+
 		String dataSql = """
-				SELECT t.CHIT_NO,
-				       t.CONTAINER_NO,
-				       t.VEHICLE_NO,
-				       t.GATE_IN_DATE_TIME,
-				       t.PARTY_CD,
-				       t.EIR,
-				       t.VESSEL_NO,
-				       t.LOADING_STATUS,
-				       t.CONTAINER_SIZE,
-				       t.FOREIGN_COASTAL_FLAG
-				""" + base + """
-				ORDER BY t.GATE_IN_DATE_TIME DESC, t.CHIT_NO
-				OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-				""";
-		
+        SELECT CHIT_NO,
+               CONTAINER_NO,
+               VEHICLE_NO,
+               GATE_IN_DATE_TIME,
+               PARTY_CD,
+               EIR,
+               VESSEL_NO,
+               LOADING_STATUS,
+               CONTAINER_SIZE,
+               FOREIGN_COASTAL_FLAG
+        FROM (
+            SELECT t.CHIT_NO,
+                   t.CONTAINER_NO,
+                   t.VEHICLE_NO,
+                   t.GATE_IN_DATE_TIME,
+                   t.PARTY_CD,
+                   t.EIR,
+                   t.VESSEL_NO,
+                   t.LOADING_STATUS,
+                   t.CONTAINER_SIZE,
+                   t.FOREIGN_COASTAL_FLAG,
+                   ROWNUM rnum
+            FROM (
+                SELECT t.CHIT_NO,
+                       t.CONTAINER_NO,
+                       t.VEHICLE_NO,
+                       t.GATE_IN_DATE_TIME,
+                       t.PARTY_CD,
+                       t.EIR,
+                       t.VESSEL_NO,
+                       t.LOADING_STATUS,
+                       t.CONTAINER_SIZE,
+                       t.FOREIGN_COASTAL_FLAG
+                """ + base + """
+                ORDER BY t.GATE_IN_DATE_TIME DESC, t.CHIT_NO
+            ) t
+            WHERE ROWNUM <= ?
+        )
+        WHERE rnum > ?
+        """;
+
 		System.out.println(dataSql);
 
-		params.add(offset);
-		params.add(size);
+		params.add(offset + size); // upper limit
+		params.add(offset);        // lower limit
 
 		@SuppressWarnings("deprecation")
 		List<GateInRowDto> content = jdbcTemplate.query(dataSql, params.toArray(), (rs, rowNum) -> {
@@ -221,25 +268,71 @@ public class ContainerGateInSearchRepository {
 
 		int offset = page * size;
 
+//		// ---- data page ----
+//		String dataSql = """
+//				SELECT t.CHIT_NO,
+//				       t.CONTAINER_NO,
+//				       t.VEHICLE_NO,
+//				       t.GATE_OUT_DATE_TIME,
+//				       t.PARTY_CD,
+//				       t.EIR,
+//				       t.VESSEL_NO,
+//				       t.LOADING_STATUS,
+//				       t.CONTAINER_SIZE,
+//				       t.FOREIGN_COASTAL_FLAG
+//				""" + base + """
+//				ORDER BY t.GATE_OUT_DATE_TIME DESC, t.CHIT_NO
+//				OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+//				""";
+//
+//		params.add(offset);
+//		params.add(size);
+
 		// ---- data page ----
 		String dataSql = """
-				SELECT t.CHIT_NO,
-				       t.CONTAINER_NO,
-				       t.VEHICLE_NO,
-				       t.GATE_OUT_DATE_TIME,
-				       t.PARTY_CD,
-				       t.EIR,
-				       t.VESSEL_NO,
-				       t.LOADING_STATUS,
-				       t.CONTAINER_SIZE,
-				       t.FOREIGN_COASTAL_FLAG
-				""" + base + """
-				ORDER BY t.GATE_OUT_DATE_TIME DESC, t.CHIT_NO
-				OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-				""";
+        SELECT CHIT_NO,
+               CONTAINER_NO,
+               VEHICLE_NO,
+               GATE_OUT_DATE_TIME,
+               PARTY_CD,
+               EIR,
+               VESSEL_NO,
+               LOADING_STATUS,
+               CONTAINER_SIZE,
+               FOREIGN_COASTAL_FLAG
+        FROM (
+            SELECT t.CHIT_NO,
+                   t.CONTAINER_NO,
+                   t.VEHICLE_NO,
+                   t.GATE_OUT_DATE_TIME,
+                   t.PARTY_CD,
+                   t.EIR,
+                   t.VESSEL_NO,
+                   t.LOADING_STATUS,
+                   t.CONTAINER_SIZE,
+                   t.FOREIGN_COASTAL_FLAG,
+                   ROWNUM rnum
+            FROM (
+                SELECT t.CHIT_NO,
+                       t.CONTAINER_NO,
+                       t.VEHICLE_NO,
+                       t.GATE_OUT_DATE_TIME,
+                       t.PARTY_CD,
+                       t.EIR,
+                       t.VESSEL_NO,
+                       t.LOADING_STATUS,
+                       t.CONTAINER_SIZE,
+                       t.FOREIGN_COASTAL_FLAG
+                """ + base + """
+                ORDER BY t.GATE_OUT_DATE_TIME DESC, t.CHIT_NO
+            ) t
+            WHERE ROWNUM <= ?
+        )
+        WHERE rnum > ?
+        """;
 
-		params.add(offset);
-		params.add(size);
+		params.add(offset + size); // upper limit
+		params.add(offset);        // lower limit
 
 		@SuppressWarnings("deprecation")
 		List<gateOutRowDto> content = jdbcTemplate.query(dataSql, params.toArray(), (rs, rowNum) -> {
