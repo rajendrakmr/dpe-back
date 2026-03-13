@@ -4,12 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import in.gov.vocport.dto.ContainerGateInDto;
 import in.gov.vocport.entities.ContainerGateInEntity;
 import in.gov.vocport.service.ContainerGateOutService;
@@ -71,5 +70,12 @@ public class ContainerGateOutRestController {
 		resp.put("message", "Gate Out Data Updated successfully");
 		resp.put("chitNo", saved.getChit_no());
 		return ResponseEntity.ok(resp);
+	}
+
+	@GetMapping("/getout-payment-status")
+	public ResponseEntity getOutPaymentStatus(@RequestParam String containerNo) {
+		Map<String, Object> result = new HashMap<>();
+		service.getOutPaymentStatus(containerNo, result);
+		return result.containsKey("error") ? new ResponseEntity<>(result,  HttpStatus.BAD_REQUEST) : new ResponseEntity<>(result,  HttpStatus.OK);
 	}
 }
