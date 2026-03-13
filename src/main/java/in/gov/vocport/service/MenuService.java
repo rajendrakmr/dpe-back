@@ -38,7 +38,7 @@ public class MenuService {
 	}
 
 	private List<MenuItemDto> fetchMenuFromProc(String userId) {
-		System.out.println("userId------------------------------>>>"+userId);
+//		System.out.println("userId------------------------------>>>"+userId);
 		final String callSql = "{call CT_DPE_PKG.GET_MENU_ITEM_PR(?, ?)}";
 
 		return jdbcTemplate.execute((CallableStatementCreator) con -> {

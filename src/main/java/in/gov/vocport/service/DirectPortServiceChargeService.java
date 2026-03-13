@@ -73,4 +73,12 @@ public class DirectPortServiceChargeService {
     public void searchServiceCharge(String chitNo, String containerNo, Map<String, Object> result) {
         result.put("success", headerRepository.findByChitNoAndContainerNo(chitNo, containerNo));
     }
+
+    public void payStatusCheck(String cfsNo, Map<String, Object> result) {
+        result.put("success", detailRepository.findGetOutPaymentStatus(cfsNo));
+    }
+
+    public void getDeliveryDate(String admissionChitNo, Map<String, Object> result) {
+        result.put("success", detailRepository.findDeliveryDate(admissionChitNo));
+    }
 }
