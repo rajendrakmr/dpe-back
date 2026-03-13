@@ -50,8 +50,11 @@ public class ServiceChargeController {
             .withProcedureName("CT_DPE_SERVICE_PR")
             .withoutProcedureColumnMetaDataAccess()   // 🔴 IMPORTANT
             .declareParameters(
-                new SqlParameter("p_service_id", Types.VARCHAR),
-                new SqlOutParameter(
+                    new SqlParameter("p_service_id", Types.VARCHAR),
+                    new SqlParameter("p_cont_size", Types.INTEGER),
+                    new SqlParameter("p_loading_status", Types.VARCHAR),
+                    new SqlParameter("p_origin", Types.VARCHAR),
+                    new SqlOutParameter(
                     "p_refcur_service_id",
                     OracleTypes.CURSOR,
                     (rs, rowNum) -> new ServiceDto(
@@ -66,10 +69,14 @@ public class ServiceChargeController {
 
     @SuppressWarnings("unchecked")
 	@GetMapping("/services")
-    public List<ServiceDto> loadServices() {
+    public List<ServiceDto> loadServices(@RequestParam(required = false) String serviceId, @RequestParam int countSize, @RequestParam String loadingStatus, @RequestParam String origin) {
 
+        Map<String, Object> object = Map.of("p_service_id", serviceId,
+                "p_cont_size", countSize,
+                "p_loading_status", loadingStatus,
+                "p_origin", origin);
         Map<String, Object> result = serviceCall.execute(
-            new MapSqlParameterSource("p_service_id", null)
+            new MapSqlParameterSource(object)
         );
 
         return (List<ServiceDto>) result.get("p_refcur_service_id");
