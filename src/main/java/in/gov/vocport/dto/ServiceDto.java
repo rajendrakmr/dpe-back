@@ -8,5 +8,6 @@ import lombok.Data;
 public class ServiceDto {
     private String serviceId;
     private String serviceName;
+    private String serviceType;
 }
 

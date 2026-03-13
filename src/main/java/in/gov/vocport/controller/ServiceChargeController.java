@@ -56,7 +56,8 @@ public class ServiceChargeController {
                     OracleTypes.CURSOR,
                     (rs, rowNum) -> new ServiceDto(
                         rs.getString("SERVICE_ID"),
-                        rs.getString("SERVICE_NAME")
+                        rs.getString("SERVICE_NAME"),
+                        rs.getString("SERVICE_TYPE")
                     )
                 )
             );
@@ -74,17 +75,31 @@ public class ServiceChargeController {
         return (List<ServiceDto>) result.get("p_refcur_service_id");
     }
     
-    @SuppressWarnings("deprecation")
-	@GetMapping("/rate")
+//    @SuppressWarnings("deprecation")
+//	@GetMapping("/rate")
+//    public Double getRate(
+//            @RequestParam String serviceId,
+//            @RequestParam String containerSize,
+//            @RequestParam String loadingStatus,
+//            @RequestParam String foreignCoastalFlag) {
+//        return jdbcTemplate.queryForObject(
+//            "SELECT CT_DPE_PKG.FN_GET_RATE(?, ?, ?, ?) FROM DUAL",
+//            new Object[]{serviceId, containerSize, loadingStatus, foreignCoastalFlag},
+//            Double.class
+//        );
+//    }
+
+    @GetMapping("/rate")
     public Double getRate(
             @RequestParam String serviceId,
             @RequestParam String containerSize,
             @RequestParam String loadingStatus,
-            @RequestParam String foreignCoastalFlag) {
+            @RequestParam String foreignCoastalFlag,
+            @RequestParam(required = false) Integer numberOfDays) {
         return jdbcTemplate.queryForObject(
-            "SELECT CT_DPE_PKG.FN_GET_RATE(?, ?, ?, ?) FROM DUAL",
-            new Object[]{serviceId, containerSize, loadingStatus, foreignCoastalFlag},
-            Double.class
+                "SELECT CT_DPE_PKG.FN_GET_RATE_ALL(?, ?, ?, ?, ?) FROM DUAL",
+                numberOfDays == null ? new Object[]{serviceId, containerSize, loadingStatus, foreignCoastalFlag} : new Object[]{serviceId, containerSize, loadingStatus, foreignCoastalFlag, numberOfDays},
+                Double.class
         );
     }
 }
