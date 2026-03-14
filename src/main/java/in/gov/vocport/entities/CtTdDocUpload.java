@@ -34,7 +34,7 @@ public class CtTdDocUpload {
     private String documentRemarks;
 
     @Column(name = "DOC_UPLOAD_DATE")
-    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
+    @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDate docUploadDate;
 
     @Column(name = "DCC_UPLOAD_PATH")
