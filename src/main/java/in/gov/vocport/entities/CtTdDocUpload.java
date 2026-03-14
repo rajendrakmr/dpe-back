@@ -53,14 +53,14 @@ public class CtTdDocUpload {
     private String createdBy;
 
     @Column(name = "CREATED_ON")
-    @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
+    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDate createdOn;
 
     @Column(name = "MODIFIED_BY")
     private String modifiedBy;
 
     @Column(name = "MODIFIED_ON")
-    @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
+    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDate modifiedOn;
 
     @ManyToOne(fetch = FetchType.LAZY)
