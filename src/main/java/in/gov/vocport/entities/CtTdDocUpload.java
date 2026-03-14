@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -46,7 +47,7 @@ public class CtTdDocUpload {
     private String dccDownLink;
 
     @Column(name = "CANCEL_FLAG")
-    private String cancelFlag;
+    private String cancelFlag = "N";
 
     @Column(name = "CREATED_BY")
     private String createdBy;

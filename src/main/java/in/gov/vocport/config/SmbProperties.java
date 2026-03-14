@@ -14,4 +14,5 @@ public class SmbProperties {
     private String share;
     private String username;
     private String password;
+    private String path;
 }

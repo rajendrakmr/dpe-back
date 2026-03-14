@@ -1,5 +1,7 @@
 package in.gov.vocport.controller;
 
+import in.gov.vocport.dto.CtThDocUploadRequestDto;
+import in.gov.vocport.entities.CtThDocUpload;
 import in.gov.vocport.service.DocumentUploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,6 +27,13 @@ public class DocumentUploadController {
                                        @RequestParam int size) {
         Map<String, Object> result = new HashMap<>();
         documentUploadService.getVesselsNo(vesselsNo, page, size, result);
+        return result.containsKey("error") ? new ResponseEntity<>(result, HttpStatus.BAD_REQUEST) : new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity save(@ModelAttribute CtThDocUploadRequestDto request, @RequestParam String userId) throws IOException {
+        Map<String, Object> result = new HashMap<>();
+        documentUploadService.save(request, userId, result);
         return result.containsKey("error") ? new ResponseEntity<>(result, HttpStatus.BAD_REQUEST) : new ResponseEntity<>(result, HttpStatus.OK);
     }
 
