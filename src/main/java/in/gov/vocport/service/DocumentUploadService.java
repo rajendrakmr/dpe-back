@@ -1,9 +1,8 @@
 package in.gov.vocport.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hierynomus.msdtyp.AccessMask;
 import com.hierynomus.msfscc.FileAttributes;
-import com.hierynomus.msfscc.fileinformation.FileDispositionInformation;
-import com.hierynomus.msfscc.fileinformation.FileInformation;
 import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.smbj.SMBClient;
 import com.hierynomus.smbj.auth.AuthenticationContext;
@@ -12,12 +11,14 @@ import com.hierynomus.smbj.session.Session;
 import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
 import in.gov.vocport.config.SmbProperties;
-import in.gov.vocport.dto.ProcedureKeyValueDTO;
+import in.gov.vocport.dto.CtThDocUploadRequestDto;
 import in.gov.vocport.dto.VesselsInfoDto;
+import in.gov.vocport.entities.CtTdDocUpload;
+import in.gov.vocport.entities.CtThDocUpload;
 import in.gov.vocport.repository.CtThDocUploadRepository;
 import in.gov.vocport.repository.GenericProcedureRepository;
-import jakarta.persistence.ParameterMode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,11 +26,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static com.hierynomus.mssmb2.SMB2CreateDisposition.FILE_OVERWRITE_IF;
 
@@ -39,6 +39,7 @@ public class DocumentUploadService {
     private final GenericProcedureRepository repository;
     private final CtThDocUploadRepository ctThDocUploadRepository;
     private final SmbProperties properties;
+    private final ObjectMapper mapper;
 
     public void getVesselsNo(String vesselsNo, int page, int size, Map<String, Object> result) {
 //        List<ProcedureKeyValueDTO> parameters = new ArrayList<>();
@@ -78,7 +79,8 @@ public class DocumentUploadService {
                     os.write(file.getBytes());
                 }
 
-                result.put("success", "File Uploaded successfully with the".concat(fileName));
+                result.put("success", "File Uploaded successfully with the ".concat(fileName));
+                result.put("fileName", fileName);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -115,6 +117,81 @@ public class DocumentUploadService {
                     throw new RuntimeException(e);
                 }
             }
+        }
+    }
+
+    public void save(CtThDocUploadRequestDto request, String userId, Map<String, Object> result) {
+        CtThDocUpload savedCtThDocUpload = ctThDocUploadRepository.findById(request.getVesselNo()).orElse(null);
+        LocalDate currentTime = LocalDate.now();
+        if (savedCtThDocUpload == null) {
+            CtThDocUpload ctThDocUpload = new CtThDocUpload();
+            BeanUtils.copyProperties(request, ctThDocUpload, "documents");
+            List<CtTdDocUpload> details = new ArrayList<>();
+            AtomicLong srlNo = new AtomicLong(1);
+            request.getDocuments().forEach(dto -> {
+                CtTdDocUpload ctTdDocUpload = new CtTdDocUpload();
+                BeanUtils.copyProperties(dto, ctTdDocUpload, "file");
+                MultipartFile file = dto.getFile();
+                ctTdDocUpload.setCreatedBy(userId);
+                ctTdDocUpload.setCreatedOn(currentTime);
+                ctTdDocUpload.setDccUploadPath(properties.getPath());
+//                Map<String, Object> resp = new HashMap<>();
+//                try {
+//                    uploadFile(file, resp);
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                }
+//                if (resp.containsKey("error")) throw new RuntimeException("Unable to save the document");
+//                ctTdDocUpload.setDccFileName((String) resp.get("fileName"));
+//                ctTdDocUpload.setDccDownLink((String) resp.get("fileName"));
+                ctTdDocUpload.setVesselNo(ctThDocUpload.getVesselNo());
+                ctTdDocUpload.setSrlNo(srlNo.get());
+                srlNo.updateAndGet(v -> v + 1);
+                details.add(ctTdDocUpload);
+            });
+            ctThDocUpload.setDocuments(details);
+            ctThDocUpload.setCreatedBy(userId);
+            ctThDocUpload.setCreatedOn(currentTime);
+            result.put("success", ctThDocUploadRepository.save(ctThDocUpload));
+        } else {
+            AtomicLong srlNo = new AtomicLong(savedCtThDocUpload.getDocuments().size() + 1);
+            request.getDocuments().forEach(dto -> {
+
+                if (dto.getSrlNo() == null) {
+                    CtTdDocUpload ctTdDocUpload = new CtTdDocUpload();
+                    BeanUtils.copyProperties(dto, ctTdDocUpload, "file");
+                    MultipartFile file = dto.getFile();
+                    ctTdDocUpload.setCreatedBy(userId);
+                    ctTdDocUpload.setCreatedOn(LocalDate.now());
+                    ctTdDocUpload.setDccUploadPath(properties.getPath());
+//                    Map<String, Object> resp = new HashMap<>();
+//                    try {
+//                        uploadFile(file, resp);
+//                    } catch (IOException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                    if (resp.containsKey("error")) throw new RuntimeException("Unable to save the document");
+//                    ctTdDocUpload.setDccFileName((String) resp.get("fileName"));
+//                    ctTdDocUpload.setDccDownLink((String) resp.get("fileName"));
+                    ctTdDocUpload.setVesselNo(savedCtThDocUpload.getVesselNo());
+                    ctTdDocUpload.setSrlNo(srlNo.get());
+                    srlNo.updateAndGet(v -> v + 1);
+                    savedCtThDocUpload.getDocuments().add(ctTdDocUpload);
+                } else if (dto.getCancelFlag().equalsIgnoreCase("Y")) {
+                    savedCtThDocUpload.getDocuments()
+                            .stream()
+                            .filter(doc -> Objects.equals(doc.getSrlNo(), dto.getSrlNo())
+                                    && "N".equalsIgnoreCase(doc.getCancelFlag()))
+                            .findFirst()
+                            .ifPresent(doc -> {
+                                doc.setCancelFlag("Y");
+                                doc.setModifiedBy(userId);
+                                doc.setModifiedOn(currentTime);
+                            });
+                }
+            });
+
+            result.put("success", ctThDocUploadRepository.save(savedCtThDocUpload));
         }
     }
 }
