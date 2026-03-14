@@ -62,7 +62,8 @@ public class DocumentUploadService {
             Session session = connection.authenticate(ac);
 
             try (DiskShare diskShare = (DiskShare) session.connectShare(properties.getShare())) {
-                String fileName = String.valueOf(LocalDateTime.now()).replace('/', '-').concat(file.getOriginalFilename());
+                String name = String.valueOf(LocalDateTime.now()).replace('/', '-').concat("_").concat(file.getOriginalFilename());
+                String fileName = name.replace(':', '-');
 
                 File smbFile = diskShare.openFile(
                         fileName,
