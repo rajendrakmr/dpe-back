@@ -17,6 +17,7 @@ import in.gov.vocport.entities.CtTdDocUpload;
 import in.gov.vocport.entities.CtThDocUpload;
 import in.gov.vocport.repository.CtThDocUploadRepository;
 import in.gov.vocport.repository.GenericProcedureRepository;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -177,7 +178,7 @@ public class DocumentUploadService {
                     ctTdDocUpload.setSrlNo(srlNo.get());
                     srlNo.updateAndGet(v -> v + 1);
                     savedCtThDocUpload.getDocuments().add(ctTdDocUpload);
-                } else if (dto.getCancelFlag().equalsIgnoreCase("Y")) {
+                } else if (StringUtils.isNotBlank(dto.getCancelFlag()) && dto.getCancelFlag().equalsIgnoreCase("Y")) {
                     savedCtThDocUpload.getDocuments()
                             .stream()
                             .filter(doc -> Objects.equals(doc.getSrlNo(), dto.getSrlNo())
