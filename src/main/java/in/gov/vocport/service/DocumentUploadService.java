@@ -17,6 +17,7 @@ import in.gov.vocport.entities.CtTdDocUpload;
 import in.gov.vocport.entities.CtThDocUpload;
 import in.gov.vocport.repository.CtThDocUploadRepository;
 import in.gov.vocport.repository.GenericProcedureRepository;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -47,8 +48,13 @@ public class DocumentUploadService {
 //        parameters.add(new ProcedureKeyValueDTO("p_refcur_vessel_info", null, void.class, ParameterMode.REF_CURSOR));
 //        List<VesselsInfoDto> vesselsInfos = (List<VesselsInfoDto>) repository.callStoredProcedure("CT_DPE_PKG.GET_VESSEL_INFO_PR", parameters, new ArrayList<VesselsInfoDto>(), "vesselsInfoDto");
 
-        Pageable pageable = PageRequest.of(page, size);
-        Page<VesselsInfoDto> vesselsInfos = ctThDocUploadRepository.findVessels(vesselsNo, pageable);
+//        int page = pageable.getPageNumber();
+//        int size = pageable.getPageSize();
+
+        int startRow = page * size;
+        int endRow = startRow + size;
+//        Pageable pageable = PageRequest.of(page, size);
+        List<VesselsInfoDto> vesselsInfos = ctThDocUploadRepository.findVessels(vesselsNo, startRow, endRow);
         result.put("success", vesselsInfos);
     }
 
@@ -135,15 +141,15 @@ public class DocumentUploadService {
                 ctTdDocUpload.setCreatedBy(userId);
                 ctTdDocUpload.setCreatedOn(currentTime);
                 ctTdDocUpload.setDccUploadPath(properties.getPath());
-//                Map<String, Object> resp = new HashMap<>();
-//                try {
-//                    uploadFile(file, resp);
-//                } catch (IOException e) {
-//                    throw new RuntimeException(e);
-//                }
-//                if (resp.containsKey("error")) throw new RuntimeException("Unable to save the document");
-//                ctTdDocUpload.setDccFileName((String) resp.get("fileName"));
-//                ctTdDocUpload.setDccDownLink((String) resp.get("fileName"));
+                Map<String, Object> resp = new HashMap<>();
+                try {
+                    uploadFile(file, resp);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                if (resp.containsKey("error")) throw new RuntimeException("Unable to save the document");
+                ctTdDocUpload.setDccFileName((String) resp.get("fileName"));
+                ctTdDocUpload.setDccDownLink((String) resp.get("fileName"));
                 ctTdDocUpload.setVesselNo(ctThDocUpload.getVesselNo());
                 ctTdDocUpload.setSrlNo(srlNo.get());
                 srlNo.updateAndGet(v -> v + 1);
@@ -164,20 +170,20 @@ public class DocumentUploadService {
                     ctTdDocUpload.setCreatedBy(userId);
                     ctTdDocUpload.setCreatedOn(LocalDate.now());
                     ctTdDocUpload.setDccUploadPath(properties.getPath());
-//                    Map<String, Object> resp = new HashMap<>();
-//                    try {
-//                        uploadFile(file, resp);
-//                    } catch (IOException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                    if (resp.containsKey("error")) throw new RuntimeException("Unable to save the document");
-//                    ctTdDocUpload.setDccFileName((String) resp.get("fileName"));
-//                    ctTdDocUpload.setDccDownLink((String) resp.get("fileName"));
+                    Map<String, Object> resp = new HashMap<>();
+                    try {
+                        uploadFile(file, resp);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    if (resp.containsKey("error")) throw new RuntimeException("Unable to save the document");
+                    ctTdDocUpload.setDccFileName((String) resp.get("fileName"));
+                    ctTdDocUpload.setDccDownLink((String) resp.get("fileName"));
                     ctTdDocUpload.setVesselNo(savedCtThDocUpload.getVesselNo());
                     ctTdDocUpload.setSrlNo(srlNo.get());
                     srlNo.updateAndGet(v -> v + 1);
                     savedCtThDocUpload.getDocuments().add(ctTdDocUpload);
-                } else if (dto.getCancelFlag().equalsIgnoreCase("Y")) {
+                } else if (StringUtils.isNotBlank(dto.getCancelFlag()) && dto.getCancelFlag().equalsIgnoreCase("Y")) {
                     savedCtThDocUpload.getDocuments()
                             .stream()
                             .filter(doc -> Objects.equals(doc.getSrlNo(), dto.getSrlNo())
