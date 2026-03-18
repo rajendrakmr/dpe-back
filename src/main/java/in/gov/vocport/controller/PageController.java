@@ -314,7 +314,7 @@ public class PageController {
 	}
 
 	@GetMapping("/get/fromLocation")
-	public ResponseEntity getVesselsNo() {
+	public ResponseEntity getFromLocation() {
 		Map<String, Object> result = new HashMap<>();
 		gateInService.getFromLocation(result);
 		return result.containsKey("error") ? new ResponseEntity<>(result, HttpStatus.BAD_REQUEST) : new ResponseEntity<>(result, HttpStatus.OK);

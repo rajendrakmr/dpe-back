@@ -78,4 +78,11 @@ public class ContainerGateOutRestController {
 		service.getOutPaymentStatus(containerNo, result);
 		return result.containsKey("error") ? new ResponseEntity<>(result,  HttpStatus.BAD_REQUEST) : new ResponseEntity<>(result,  HttpStatus.OK);
 	}
+
+	@GetMapping("/get-container")
+	public ResponseEntity getAllContainer(@RequestParam(required = false) String containerNo) {
+		Map<String, Object> result = new HashMap<>();
+		service.getAllContainer(containerNo, result);
+		return result.containsKey("error") ? new ResponseEntity<>(result,  HttpStatus.BAD_REQUEST) : new ResponseEntity<>(result,  HttpStatus.OK);
+	}
 }
