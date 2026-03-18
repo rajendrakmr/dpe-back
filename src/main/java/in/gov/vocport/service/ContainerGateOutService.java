@@ -156,4 +156,12 @@ public class ContainerGateOutService {
 		List<ContainerDto> containerList = (List<ContainerDto>) genericProcedureRepository.callStoredProcedure("CT_DPE_PKG.CT_DPE_CONTAINER_NO_PR", parameters, new ArrayList<ContainerDto>(), "containerDto");
 		result.put("success", containerList);
 	}
+
+	public void getContainerDetails(String containerNo, Map<String, Object> result) {
+		List<ProcedureKeyValueDTO> parameters = new ArrayList<>();
+		parameters.add(new ProcedureKeyValueDTO("p_container_no", containerNo, String.class, ParameterMode.IN));
+		parameters.add(new ProcedureKeyValueDTO("p_refcur_gt_out_cont_no", null, void.class, ParameterMode.REF_CURSOR));
+		List<ContainerDetailsDto> containerList = (List<ContainerDetailsDto>) genericProcedureRepository.callStoredProcedure("CT_DPE_PKG.CT_DPE_GT_OUT_CONT_NO_PR", parameters, new ArrayList<ContainerDetailsDto>(), "containerDetailsDto");
+		result.put("success", containerList);
+	}
 }
