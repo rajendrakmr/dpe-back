@@ -43,7 +43,10 @@ public class ReportGenerator {
             Map.entry("DCIN_Water_SumDay_PDF.jrxml", "DCIN_Water_SumDay_PDF_subreport1.jrxml"));
 
 
-    public void generateGenericReport(String doc, String object, HttpServletResponse response, String fileName, String reportName) throws ReportGenerationException {
+    private static final Map<String, String> moduleNameWithReportName = Map.ofEntries(Map.entry("Direct Port Entry Service Charges-Add", "DPE_Bill_PDF.jrxml"));
+    public void generateGenericReport(String doc, String object, HttpServletResponse response, String fileName, String moduleName) throws ReportGenerationException {
+        String reportName = moduleNameWithReportName.get(moduleName);
+
         try (Connection connection = primary.getConnection()){
             JSONObject jsonObject = new JSONObject(object);
 //            Connection connection = primary.getConnection();
