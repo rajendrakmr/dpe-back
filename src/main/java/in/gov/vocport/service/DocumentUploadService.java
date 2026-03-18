@@ -12,9 +12,11 @@ import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
 import in.gov.vocport.config.SmbProperties;
 import in.gov.vocport.dto.CtThDocUploadRequestDto;
+import in.gov.vocport.dto.PagedResponse;
 import in.gov.vocport.dto.VesselsInfoDto;
 import in.gov.vocport.entities.CtTdDocUpload;
 import in.gov.vocport.entities.CtThDocUpload;
+import in.gov.vocport.repository.CommonSearchOptionRepository;
 import in.gov.vocport.repository.CtThDocUploadRepository;
 import in.gov.vocport.repository.GenericProcedureRepository;
 import io.micrometer.common.util.StringUtils;
@@ -41,6 +43,7 @@ public class DocumentUploadService {
     private final CtThDocUploadRepository ctThDocUploadRepository;
     private final SmbProperties properties;
     private final ObjectMapper mapper;
+    private final CommonSearchOptionRepository commonSearchOptionRepository;
 
     public void getVesselsNo(String vesselsNo, int page, int size, Map<String, Object> result) {
 //        List<ProcedureKeyValueDTO> parameters = new ArrayList<>();
@@ -51,10 +54,11 @@ public class DocumentUploadService {
 //        int page = pageable.getPageNumber();
 //        int size = pageable.getPageSize();
 
-        int startRow = page * size;
-        int endRow = startRow + size;
+//        int startRow = page * size;
+//        int endRow = startRow + size;
 //        Pageable pageable = PageRequest.of(page, size);
-        List<VesselsInfoDto> vesselsInfos = ctThDocUploadRepository.findVessels(vesselsNo, startRow, endRow);
+//        List<VesselsInfoDto> vesselsInfos = ctThDocUploadRepository.findVessels(vesselsNo, startRow, endRow);
+        PagedResponse<VesselsInfoDto> vesselsInfos = commonSearchOptionRepository.findVessels(vesselsNo, page, size);
         result.put("success", vesselsInfos);
     }
 
