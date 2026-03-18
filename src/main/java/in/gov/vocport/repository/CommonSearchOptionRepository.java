@@ -1,16 +1,8 @@
 package in.gov.vocport.repository;
 
-import in.gov.vocport.dto.AgentDto;
-import in.gov.vocport.dto.CargoDto;
-import in.gov.vocport.dto.ContainerInPortDto;
-import in.gov.vocport.dto.ContainerNoDto;
-import in.gov.vocport.dto.LinerDto;
-import in.gov.vocport.dto.LocationDto;
-import in.gov.vocport.dto.PagedResponse;
-import in.gov.vocport.dto.PortDto;
-import in.gov.vocport.dto.ShipperDto;
-import in.gov.vocport.dto.VesselDto;
+import in.gov.vocport.dto.*;
 import oracle.jdbc.OracleTypes;
+import org.springframework.data.domain.Page;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import java.sql.CallableStatement;
@@ -795,4 +787,81 @@ public class CommonSearchOptionRepository {
 		});
 	}
 
+
+	public PagedResponse<VesselsInfoDto> findVessels(String vesselsNo, int page, int size) {
+		String base = """
+        FROM DPE_VESSEL_NO_NAME_VW vn
+        WHERE 1=1
+        """;
+
+		List<Object> params = new ArrayList<>();
+
+		// Dynamic filter
+		if (vesselsNo != null && !vesselsNo.isBlank()) {
+			base += " AND UPPER(TRIM(vn.vessel_no)) LIKE UPPER(?)";
+			params.add("%" + vesselsNo.trim() + "%");
+		}
+
+		// ✅ Total count query
+		String countSql = "SELECT COUNT(*) " + base;
+
+		long total = jdbcTemplate.queryForObject(countSql, params.toArray(), Long.class);
+
+		// Pagination calculation
+		int offset = page * size;
+
+		// ✅ Data query (Oracle 11g compatible pagination)
+		String dataSql = """
+    	SELECT vesselNo,
+           vcn,
+           vesselName,
+           berthedTime,
+           agentCustomerName,
+           agentCustomerId,
+           zoneId
+    FROM (
+        SELECT a.*, ROWNUM rnum
+        FROM (
+            SELECT vn.vessel_no AS vesselNo,
+                   vn.calinv_vcn AS vcn,
+                   vn.vessel_name AS vesselName,
+                   vn.berthed_time AS berthedTime,
+                   vn.agent_customer_name AS agentCustomerName,
+                   vn.agent_customer_id AS agentCustomerId,
+                   vn.zone_id AS zoneId
+            """ + base + """
+            ORDER BY SUBSTR(vn.vessel_no,4) DESC
+        ) a
+        WHERE ROWNUM <= ?
+    )
+    WHERE rnum > ?
+    """;
+
+		// Add pagination params
+		params.add(offset + size); // upper bound
+		params.add(offset);        // lower bound
+
+		// ✅ Execute query
+		List<VesselsInfoDto> content = jdbcTemplate.query(
+				dataSql,
+				params.toArray(),
+				(rs, rowNum) -> {
+					VesselsInfoDto dto = new VesselsInfoDto();
+					dto.setVesselNo(rs.getString("vesselNo"));
+					dto.setVcn(rs.getString("vcn"));
+					dto.setVesselName(rs.getString("vesselName"));
+					dto.setBerthedTime(rs.getTimestamp("berthedTime"));
+					dto.setAgentCustomerName(rs.getString("agentCustomerName"));
+					dto.setAgentCustomerId(rs.getString("agentCustomerId"));
+					dto.setZoneId(rs.getString("zoneId"));
+					return dto;
+				}
+		);
+
+		// Total pages
+		int totalPages = (int) Math.ceil((double) total / size);
+
+		// Final response
+		return new PagedResponse<>(content, page, totalPages, total);
+	}
 }
