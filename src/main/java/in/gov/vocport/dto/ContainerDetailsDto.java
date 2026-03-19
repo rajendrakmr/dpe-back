@@ -48,7 +48,11 @@ import java.time.LocalDateTime;
                         @ColumnResult(name = "sical_line_code", type = String.class),
                         @ColumnResult(name = "sical_line_name", type = String.class),
                         @ColumnResult(name = "bags", type = String.class),
-                        @ColumnResult(name = "quantity", type = Double.class)
+                        @ColumnResult(name = "quantity", type = Double.class),
+                        @ColumnResult(name = "shipper", type = String.class),
+                        @ColumnResult(name = "destination_port", type = String.class),
+                        @ColumnResult(name = "port_nm", type = String.class),
+                        @ColumnResult(name = "cargo_cd_desc", type = String.class)
                 }
         )
 )
@@ -85,4 +89,8 @@ public class ContainerDetailsDto {
     private String sicalLineName;
     private String bags;
     private Double quantity;
+    private String shipper;
+    private String destinationPort;
+    private String portNm;
+    private String cargoCdDesc;
 }
