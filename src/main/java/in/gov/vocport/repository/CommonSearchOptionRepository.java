@@ -188,7 +188,7 @@ public class CommonSearchOptionRepository {
                    v.STATUS_FOREIGN_COASTAL
                    ROWNUM rnum
             FROM (
-                SELECT v.VESSEL_NO, v.VESSEL_NAME, v.VOYAGE_NUMBER, v.STATUS_FOREIGN_COASTAL
+                SELECT v.VESSEL_NO, v.VESSEL_NAME, v.VOYAGE_NUMBER,v.STATUS_FOREIGN_COASTAL
                 """ + base + """
                 ORDER BY v.VESSEL_NAME ASC
             ) v
@@ -203,7 +203,7 @@ public class CommonSearchOptionRepository {
 		@SuppressWarnings("deprecation")
 		List<VesselDto> content = jdbcTemplate.query(dataSql, params.toArray(),
 				(rs, rowNum) -> new VesselDto(rs.getString("VESSEL_NO"), rs.getString("VESSEL_NAME"),
-						rs.getString("VOYAGE_NUMBER"), rs.getString("status_foreign_coastal")));
+						rs.getString("VOYAGE_NUMBER"), rs.getString("STATUS_FOREIGN_COASTAL")));
 
 		int totalPages = (int) Math.ceil((double) total / size);
 		return new PagedResponse<>(content, page, totalPages, total);
