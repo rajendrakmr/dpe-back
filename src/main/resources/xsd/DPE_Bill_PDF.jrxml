@@ -163,7 +163,7 @@ where P2PREQUESTID = nvl($P{p2prequestiD},P2PREQUESTID)]]>
                         <font size="7" isBold="true"/>
                     </textElement>
                     <text><![CDATA[Service
-From Dt]]></text>
+From Date]]></text>
                 </staticText>
                 <staticText>
                     <reportElement stretchType="RelativeToBandHeight" x="335" y="92" width="40" height="24"/>
@@ -184,7 +184,7 @@ From Dt]]></text>
                     <textElement textAlignment="Right">
                         <font size="7" isBold="true"/>
                     </textElement>
-                    <text><![CDATA[Total]]></text>
+                    <text><![CDATA[Amount Received]]></text>
                 </staticText>
                 <staticText>
                     <reportElement x="380" y="92" width="45" height="24"/>
