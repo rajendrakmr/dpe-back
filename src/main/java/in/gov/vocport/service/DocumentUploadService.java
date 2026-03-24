@@ -216,7 +216,7 @@ public class DocumentUploadService {
         else {
             List<CtTdDocUpload> filtedList = ctThDocUpload != null ? ctThDocUpload.getDocuments()
                     .stream()
-                    .filter(doc -> doc.getAgentCustomerId().equals(agentCode) && doc.getCancelFlag().equalsIgnoreCase("N"))
+                    .filter(doc -> (StringUtils.isBlank(agentCode) || doc.getAgentCustomerId().equals(agentCode)) && doc.getCancelFlag().equalsIgnoreCase("N"))
                     .toList() : null;
 
             if (filtedList == null || filtedList.isEmpty()) result.put("error", "No Document Added Yet");
