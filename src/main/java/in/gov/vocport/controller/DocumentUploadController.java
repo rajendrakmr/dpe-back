@@ -59,7 +59,7 @@ public class DocumentUploadController {
     }
 
     @GetMapping("/get-doc")
-    public ResponseEntity getDoc(@RequestParam String vesselsNo, @RequestParam String agentCode) {
+    public ResponseEntity getDoc(@RequestParam String vesselsNo, @RequestParam(required = false) String agentCode) {
         Map<String, Object> result = new HashMap<>();
         documentUploadService.getDoc(vesselsNo, agentCode, result);
         return result.containsKey("error") ? new ResponseEntity<>(result, HttpStatus.BAD_REQUEST) : new ResponseEntity<>(result, HttpStatus.OK);
