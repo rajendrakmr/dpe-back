@@ -929,17 +929,7 @@ public class CommonSearchOptionRepository {
 		List<AgentProjection> content = jdbcTemplate.query(
 				dataSql,
 				dataParams.toArray(),
-				(rs, rowNum) -> new AgentProjection() {
-					@Override
-					public String getPartyCd() throws SQLException {
-						return rs.getString("partyCd");
-					}
-
-					@Override
-					public String getAgentNm() throws SQLException {
-						return rs.getString("agentNm");
-					}
-				}
+				(rs, rowNum) -> new AgentProjection(rs.getString("partyCd"), rs.getString("agentNm"))
 		);
 
 		// ✅ Total pages
