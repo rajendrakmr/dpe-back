@@ -192,7 +192,7 @@ public class DocumentUploadService {
                             .findFirst()
                             .ifPresent(doc -> {
                                 BeanUtils.copyProperties(dto, doc, "srlNo", "file");
-                                doc.setCancelFlag(dto.getCancelFlag());
+//                                doc.setCancelFlag(dto.getCancelFlag());
                                 doc.setModifiedBy(userId);
                                 doc.setModifiedOn(currentTime);
                             });
