@@ -28,5 +28,11 @@ public class CtTdDocUploadRequestDto {
 
     private String dccDownLink;
 
+    private String agentCustomerId;
+
+    private String agentCustomerName;
+
+    private String agentCategory;
+
     private MultipartFile file;
 }
