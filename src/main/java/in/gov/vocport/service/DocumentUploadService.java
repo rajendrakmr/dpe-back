@@ -199,12 +199,12 @@ public class DocumentUploadService {
                 }
             });
 
-            List<CtTdDocUpload> filtedList = savedCtThDocUpload.getDocuments()
-                    .stream()
-                    .filter(doc -> doc.getCancelFlag().equalsIgnoreCase("N"))
-                    .toList();
-
-            savedCtThDocUpload.setDocuments(filtedList);
+//            List<CtTdDocUpload> filtedList = savedCtThDocUpload.getDocuments()
+//                    .stream()
+//                    .filter(doc -> doc.getCancelFlag().equalsIgnoreCase("N"))
+//                    .toList();
+//
+//            savedCtThDocUpload.setDocuments(filtedList);
 
             result.put("success", ctThDocUploadRepository.save(savedCtThDocUpload));
         }
