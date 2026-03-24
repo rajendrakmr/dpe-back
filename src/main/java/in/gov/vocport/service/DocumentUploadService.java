@@ -212,18 +212,19 @@ public class DocumentUploadService {
 
     public void getDoc(String vesselsNo, String agentCode, Map<String, Object> result) {
         CtThDocUpload ctThDocUpload = ctThDocUploadRepository.findById(vesselsNo).orElse(null);
-        if (ctThDocUpload != null && StringUtils.isBlank(agentCode)) result.put("success", ctThDocUpload);
-        else {
-            List<CtTdDocUpload> filtedList = ctThDocUpload != null ? ctThDocUpload.getDocuments()
-                    .stream()
-                    .filter(doc -> (StringUtils.isBlank(agentCode) || doc.getAgentCustomerId().equals(agentCode)) && doc.getCancelFlag().equalsIgnoreCase("N"))
-                    .toList() : null;
+//        if (ctThDocUpload != null) result.put("success", ctThDocUpload);
+//        else {
+//
+//        }
+        List<CtTdDocUpload> filtedList = ctThDocUpload != null ? ctThDocUpload.getDocuments()
+                .stream()
+                .filter(doc -> (StringUtils.isBlank(agentCode) || doc.getAgentCustomerId().equals(agentCode)) && doc.getCancelFlag().equalsIgnoreCase("N"))
+                .toList() : null;
 
-            if (filtedList == null || filtedList.isEmpty()) result.put("error", "No Document Added Yet");
-            else {
-                ctThDocUpload.setDocuments(filtedList);
-                result.put("success", ctThDocUpload);
-            }
+        if (filtedList == null || filtedList.isEmpty()) result.put("error", "No Document Added Yet");
+        else {
+            ctThDocUpload.setDocuments(filtedList);
+            result.put("success", ctThDocUpload);
         }
     }
 
