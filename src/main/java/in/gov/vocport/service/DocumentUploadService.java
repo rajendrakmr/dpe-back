@@ -213,7 +213,10 @@ public class DocumentUploadService {
                     .toList() : null;
 
             if (filtedList == null || filtedList.isEmpty()) result.put("error", "No Document Added Yet");
-            else result.put("success", filtedList);
+            else {
+                ctThDocUpload.setDocuments(filtedList);
+                result.put("success", ctThDocUpload);
+            }
         }
     }
 
