@@ -144,15 +144,15 @@ public class DocumentUploadService {
                 ctTdDocUpload.setCreatedBy(userId);
                 ctTdDocUpload.setCreatedOn(currentTime);
                 ctTdDocUpload.setDccUploadPath(properties.getPath());
-//                Map<String, Object> resp = new HashMap<>();
-//                try {
-//                    uploadFile(file, resp);
-//                } catch (IOException e) {
-//                    throw new RuntimeException(e);
-//                }
-//                if (resp.containsKey("error")) throw new RuntimeException("Unable to save the document");
-//                ctTdDocUpload.setDccFileName((String) resp.get("fileName"));
-//                ctTdDocUpload.setDccDownLink((String) resp.get("fileName"));
+                Map<String, Object> resp = new HashMap<>();
+                try {
+                    uploadFile(file, resp);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                if (resp.containsKey("error")) throw new RuntimeException("Unable to save the document");
+                ctTdDocUpload.setDccFileName((String) resp.get("fileName"));
+                ctTdDocUpload.setDccDownLink((String) resp.get("fileName"));
                 ctTdDocUpload.setVesselNo(ctThDocUpload.getVesselNo());
                 ctTdDocUpload.setSrlNo(srlNo.get());
                 srlNo.updateAndGet(v -> v + 1);
@@ -173,15 +173,15 @@ public class DocumentUploadService {
                     ctTdDocUpload.setCreatedBy(userId);
                     ctTdDocUpload.setCreatedOn(LocalDate.now());
                     ctTdDocUpload.setDccUploadPath(properties.getPath());
-//                    Map<String, Object> resp = new HashMap<>();
-//                    try {
-//                        uploadFile(file, resp);
-//                    } catch (IOException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                    if (resp.containsKey("error")) throw new RuntimeException("Unable to save the document");
-//                    ctTdDocUpload.setDccFileName((String) resp.get("fileName"));
-//                    ctTdDocUpload.setDccDownLink((String) resp.get("fileName"));
+                    Map<String, Object> resp = new HashMap<>();
+                    try {
+                        uploadFile(file, resp);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    if (resp.containsKey("error")) throw new RuntimeException("Unable to save the document");
+                    ctTdDocUpload.setDccFileName((String) resp.get("fileName"));
+                    ctTdDocUpload.setDccDownLink((String) resp.get("fileName"));
                     ctTdDocUpload.setVesselNo(savedCtThDocUpload.getVesselNo());
                     ctTdDocUpload.setSrlNo(srlNo.get());
                     srlNo.updateAndGet(v -> v + 1);
@@ -206,8 +206,21 @@ public class DocumentUploadService {
 //                    .toList();
 //
 //            savedCtThDocUpload.setDocuments(filtedList);
+            CtThDocUpload ctThDocUpload = new CtThDocUpload();
+            BeanUtils.copyProperties(savedCtThDocUpload, ctThDocUpload, "documents");
+            List<CtTdDocUpload> childList = new ArrayList<>();
+            savedCtThDocUpload.getDocuments().forEach(doc -> {
+                if (doc.getCancelFlag().equalsIgnoreCase("N")) {
+                    CtTdDocUpload detail = new CtTdDocUpload();
+                    BeanUtils.copyProperties(doc, detail, "header");
+                    childList.add(detail);
+                }
+            });
+            ctThDocUpload.setDocuments(childList);
 
-            result.put("success", ctThDocUploadRepository.save(savedCtThDocUpload));
+            ctThDocUploadRepository.save(savedCtThDocUpload);
+
+            result.put("success", ctThDocUpload);
         }
     }
 
