@@ -32,7 +32,7 @@ public class DocumentUploadController {
     }
 
     @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity save(@ModelAttribute CtThDocUploadRequestDto request, @RequestParam String userId, @RequestParam String agentCode) throws IOException {
+    public ResponseEntity save(@ModelAttribute CtThDocUploadRequestDto request, @RequestParam String userId, @RequestParam(required = false) String agentCode) throws IOException {
         Map<String, Object> result = new HashMap<>();
         documentUploadService.save(request, userId, agentCode, result);
         return result.containsKey("error") ? new ResponseEntity<>(result, HttpStatus.BAD_REQUEST) : new ResponseEntity<>(result, HttpStatus.OK);
