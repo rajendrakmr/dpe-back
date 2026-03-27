@@ -6,11 +6,7 @@ metadata:
 spec:
   selector:
     app: dpe-backend
-  type: ClusterIP
-  # sessionAffinity: None
-  # sessionAffinityConfig:
-  #   clientIP:
-  #     timeoutSeconds: 10800
+  # type: ClusterIP 
   ports:
   - name: backend
     protocol: TCP
