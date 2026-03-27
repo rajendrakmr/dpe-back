@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpe-frontend-deploy
+  namespace: dpe-ns
+  labels:
+    app: dpe-frontend-deploy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: dpe-frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+
+  template:
+    metadata:
+      labels:
+        app: dpe-frontend 
+    spec:
+      # hostAliases:
+      #   - ip: "172.31.36.171" 
+      #     hostnames:
+      #       - "host.docker.internal"
+      containers: 
+        - name: dpe-frontend-container
+          image: cloudwithrk/dpe-frontend:latest
+          ports:
+            - containerPort: 80
+
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 400m
+              memory: 512Mi
+
+          # livenessProbe:
+          #   tcpSocket:
+          #     port: 8080
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 10
+
+          # readinessProbe:
+          #   httpGet:
+          #     path: /actuator/health
+          #     port: 8080
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 10 
+
+      restartPolicy: Always
