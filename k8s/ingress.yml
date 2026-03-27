@@ -4,14 +4,14 @@ metadata:
   name: dpe-ingress
   namespace: dpe-ns
   annotations:
-    # cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
-  # tls:
-  # - hosts:
-  #   - dpe.hicloud.co.in
-    # secretName: dpe-tls-secret
+  tls:
+  - hosts:
+    - dpe.hicloud.co.in
+    secretName: dpe-tls-secret
   rules:
   - host: dpe.hicloud.co.in
     http:
