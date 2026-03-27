@@ -87,13 +87,13 @@ spec:
         #     limits:
         #       cpu: 300m
         #       memory: 256Mi
-          volumeMounts:
-            - name: ssh-key-volume
-              mountPath: /root/.ssh
+      #     volumeMounts:
+      #       - name: ssh-key-volume
+      #         mountPath: /root/.ssh
 
-      volumes:
-        - name: ssh-key-volume
-          secret:
-            secretName: ssh-key-secret
+      # volumes:
+      #   - name: ssh-key-volume
+      #     secret:
+      #       secretName: ssh-key-secret
 
       restartPolicy: Always
