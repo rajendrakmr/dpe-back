@@ -21,6 +21,10 @@ spec:
       labels:
         app: dpe-backend 
     spec:
+      hostAliases:
+        - ip: "172.31.36.171" 
+          hostnames:
+            - "host.docker.internal"
       containers: 
         - name: dpe-backend-container
           image: cloudwithrk/dpe-backend:latest
