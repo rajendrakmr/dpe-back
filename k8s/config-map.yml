@@ -6,3 +6,4 @@ metadata:
 data: 
   SPRING_DATASOURCE_URL: jdbc:oracle:thin:@host.docker.internal:1521:orclpdb
   SPRING_DATASOURCE_USERNAME: EPISVOC 
+
