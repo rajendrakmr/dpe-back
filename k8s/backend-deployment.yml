@@ -33,11 +33,11 @@ spec:
 
           resources:
             requests:
-              cpu: 200m
-              memory: 128Mi
-            limits:
               cpu: 300m
-              memory: 256Mi
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1.5Gi
 
           # livenessProbe:
           #   tcpSocket:
