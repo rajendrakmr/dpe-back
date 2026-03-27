@@ -7,7 +7,7 @@ spec:
     email: rajendraakmr@gmail.com
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
-      name: dpe-tls-secret
+      name: letsencrypt-prod-account-key
     solvers:
     - http01:
         ingress:
